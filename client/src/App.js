@@ -1,9 +1,16 @@
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import Portals from "./pages/Portals";
+
+
+
 
 function App() {
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-200">
-      <h1 className="text-3xl font-bold text-blue-500">Hello, Tailwind CSS!</h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+      <Route path="/" element={<Portals/>}/>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
