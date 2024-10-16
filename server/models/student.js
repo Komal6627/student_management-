@@ -14,8 +14,13 @@ const studentSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  address:{
+    type: String,
+    require: true
+  },
   contactNo: {
-    phone: Number,
+    type: Number,
+    require: true
   },
   email:{
     type: String

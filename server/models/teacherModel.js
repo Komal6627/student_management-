@@ -14,12 +14,17 @@ const teacherSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  address:{
+    type: String,
+    require: true
+  },
   contactNo: {
     type: Number,
     required: true
   },
    email:{
-    type: String
+    type: String,
+    require: true
    } ,
    password: {
     type: String,
