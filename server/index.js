@@ -3,6 +3,8 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import teacherRoute from "./routes/teacherRoute.js"
+import studentRoute from "./routes/studentRoute.js"
+import classRoute from "./routes/classRoute.js"
 
 const app = express();
 dotenv.config();
@@ -12,6 +14,9 @@ app.use(express.json());
 
 
 app.use("/api/teacher",teacherRoute)
+app.use("/api/student",studentRoute)
+app.use("/api/class", classRoute )
+
 
 const url = process.env.MONGO_URL;
 

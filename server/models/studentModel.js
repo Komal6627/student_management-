@@ -8,22 +8,23 @@ const studentSchema = new mongoose.Schema({
   gender: {
     type: String,
     enum: ['Male', 'Female', 'Other'],
-    required: true
+    
   },
   dateOfBirth: {
     type: Date,
-    required: true
+   
   },
   address:{
     type: String,
-    require: true
+  
   },
   contactNo: {
     type: Number,
     require: true
   },
   email:{
-    type: String
+    type: String,
+    require: true
    } ,
   password: {
     type: String,
