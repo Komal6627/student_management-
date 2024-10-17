@@ -70,82 +70,55 @@ export const loginAdmin = async (req, res) => {
 };
 
 
-
-// Create a new class
 export const createClass = async (req, res) => {
-  const { className, year, teacher, studentFees, studentList } = req.body;
+    try {
+        const newClass = new Class(req.body);
+        await newClass.save();
+        res.status(201).json({ success: true, class: newClass });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+// Get all classes
+export const getAllClasses = async (req, res) => {
   try {
-    const newClass = new Class({
-      className,
-      year,
-      teacher,
-      studentFees,
-      studentList
-    });
-    const savedClass = await newClass.save();
-    res.status(201).json(savedClass);
+      const classes = await Class.find().populate('teacher').populate('studentList');
+      res.status(200).json({ success: true, classes });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+      res.status(400).json({ success: false, message: error.message });
   }
 };
 
-// READ all classes
-export const getClasses = async (req, res) => {
-  try {
-    const classes = await Class.find().populate('teacher').populate('studentList');
-    res.status(200).json(classes);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// READ a single class by ID
+// Get a class by ID
 export const getClassById = async (req, res) => {
-  const { id } = req.params;
   try {
-    const classData = await Class.findById(id).populate('teacher').populate('studentList');
-    if (!classData) {
-      return res.status(404).json({ message: 'Class not found' });
-    }
-    res.status(200).json(classData);
+      const classData = await Class.findById(req.params.id).populate('teacher').populate('studentList');
+      if (!classData) return res.status(404).json({ success: false, message: 'Class not found' });
+      res.status(200).json({ success: true, class: classData });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+      res.status(400).json({ success: false, message: error.message });
   }
 };
 
-// UPDATE an existing class by ID
+// Update a class
 export const updateClass = async (req, res) => {
-  const { id } = req.params;
-  const { className, year, teacher, studentFees, studentList } = req.body;
-
   try {
-    const updatedClass = await Class.findByIdAndUpdate(
-      id,
-      { className, year, teacher, studentFees, studentList },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedClass) {
-      return res.status(404).json({ message: 'Class not found' });
-    }
-
-    res.status(200).json(updatedClass);
+      const updatedClass = await Class.findByIdAndUpdate(req.params.id, req.body, { new: true });
+      if (!updatedClass) return res.status(404).json({ success: false, message: 'Class not found' });
+      res.status(200).json({ success: true, class: updatedClass });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+      res.status(400).json({ success: false, message: error.message });
   }
 };
 
-// DELETE a class by ID
+// Delete a class
 export const deleteClass = async (req, res) => {
-  const { id } = req.params;
-  
   try {
-    const deletedClass = await Class.findByIdAndDelete(id);
-    if (!deletedClass) {
-      return res.status(404).json({ message: 'Class not found' });
-    }
-    res.status(200).json({ message: 'Class deleted successfully' });
+      const deletedClass = await Class.findByIdAndDelete(req.params.id);
+      if (!deletedClass) return res.status(404).json({ success: false, message: 'Class not found' });
+      res.status(200).json({ success: true, message: 'Class deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+      res.status(400).json({ success: false, message: error.message });
   }
 };

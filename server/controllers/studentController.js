@@ -60,8 +60,6 @@ export const loginStudent = async (req, res) => {
 };
 
 
-
-
 // Create a new student
 export const createStudent = async (req, res) => {
     try {
