@@ -1,13 +1,16 @@
 import React from 'react'
-import RegistrationForm from '../components/RegistrationForm'
 import LoginForm from '../components/LoginForm'
+import TeacherPortal from '../components/TeacherPortal';
+import { useAuth } from '../context/AuthContext';
 
 const Teacher = () => {
+  const { isAuthenticated } = useAuth(); // Get authentication state
+
   return (
-   <div>
-     <LoginForm model="Teacher" /> 
-   </div>
-  )
+    <div>
+      {isAuthenticated ? <TeacherPortal /> : <LoginForm />}
+    </div>
+  );
 }
 
 export default Teacher

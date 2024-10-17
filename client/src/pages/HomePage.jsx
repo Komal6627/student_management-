@@ -27,8 +27,12 @@ const Homepage = () => {
                             <button className="bg-purple-500 text-white py-2 px-4 w-50% rounded">
                                 Go to Portal
                             </button>
-                        </Link>
-                        
+                        </Link>       
+                        <Link to="/login" className="w-full mx-10">
+                            <button className="bg-purple-500 text-white py-2 px-4 w-50% rounded">
+                                Login
+                            </button>     
+                        </Link>             
                     </div>
                 </div>
             </div>

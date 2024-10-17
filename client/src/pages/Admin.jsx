@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
-import RegistrationForm from '../components/RegistrationForm'
+import LoginForm from '../components/LoginForm'
+import ClassPortal from '../components/ClassPortal';
+import { useAuth } from '../context/AuthContext';
 
 const Admin = () => {
-    const [model, setModel] = useState('Admin');
-    
+  const { isAuthenticated } = useAuth(); // Get authentication state
+
   return (
     <div>
-      <RegistrationForm model="Admin"/>
+      {isAuthenticated ? <ClassPortal /> : <LoginForm />}
     </div>
-  )
+  );
 }
 
 export default Admin

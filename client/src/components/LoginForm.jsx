@@ -78,7 +78,7 @@ const LoginForm = () => {
     <>
       <div className="flex h-screen justify-center items-center">
         <form onSubmit={handleSubmit} className="bg-opacity-75 rounded-2xl p-12 flex flex-col gap-8 w-full max-w-sm">
-          <h1 className="text-black text-2xl font-bold uppercase">Login</h1>
+          <h1 className="text-black mx-10 text-2xl font-bold uppercase">{model} Login</h1>
           
           {/* Model Selection */}
           <select value={model} onChange={handleModelChange} className="bg-transparent border border-[#4e0eff] rounded-md p-4">
