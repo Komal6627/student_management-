@@ -88,12 +88,3 @@ export default DynamicForm;
 
 
 
-
-
-//env
-
-// PORT=5000
-
-// MONGO_URL= mongodb+srv://kmongo321:wXGHycb1kXm4O3zZ@cluster0.nxyqu.mongodb.net/school_db?retryWrites=true&w=majority&appName=Cluster0
-
-// JWT_SECRET=  86e0ead75b470edbd122ebb6e42341715fc0a856cad4a23e0bee2a0022ed7318
