@@ -3,9 +3,10 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import { registerStudentRoute, registerTeacherRoute, registerAdminRoute } from '../utils/APIRoute';
 import 'react-toastify/ReactToastify.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const RegistrationForm = () => {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [model, setModel] = useState('Student'); // Default model
 
@@ -31,6 +32,7 @@ const RegistrationForm = () => {
     if (isValid) {
       await handleFormSubmit(formData, model);
     }
+    navigate("/login")
   };
 
   const handleValidation = () => {
@@ -83,21 +85,21 @@ const RegistrationForm = () => {
             name="name"
             placeholder={`${model} Name`}
             onChange={handleChange}
-            className="bg-transparent border border-[#4e0eff] rounded-md p-4 text-white"
+            className="bg-transparent border border-[#4e0eff] rounded-md p-4 "
           />
           <input
             type="email"
             name="email"
             placeholder={`${model} Email`}
             onChange={handleChange}
-            className="bg-transparent border border-[#4e0eff] rounded-md p-4 text-white"
+            className="bg-transparent border border-[#4e0eff] rounded-md p-4 "
           />
           <input
             type="password"
             name="password"
             placeholder="Password"
             onChange={handleChange}
-            className="bg-transparent border border-[#4e0eff] rounded-md p-4 text-white"
+            className="bg-transparent border border-[#4e0eff] rounded-md p-4 "
           />
           <button
             type="submit"

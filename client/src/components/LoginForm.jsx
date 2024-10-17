@@ -3,10 +3,12 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import { loginStudentRoute, loginTeacherRoute, loginAdminRoute } from '../utils/APIRoute'; // Adjust imports based on your API routes
 import 'react-toastify/ReactToastify.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
 const LoginForm = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [model, setModel] = useState('Student'); // Default model
+  const navigate = useNavigate(); // Hook to navigate
 
   const toastOptions = {
     position: 'bottom-right',
@@ -54,7 +56,18 @@ const LoginForm = () => {
 
       const response = await axios.post(endpoint, data);
       toast.success('Login successful!', toastOptions);
-      // Handle successful login (e.g., redirect or update state)
+
+      // Handle successful login
+      // For example, you might want to store the token or user info here
+
+      // Navigate to the respective portal based on the model
+      if (model === 'Student') {
+        navigate('/student-portal'); // Update this path as needed
+      } else if (model === 'Teacher') {
+        navigate('/teacher-portal'); // Update this path as needed
+      } else if (model === 'Admin') {
+        navigate('/admin-portal'); // Update this path as needed
+      }
     } catch (error) {
       toast.error('Error logging in', toastOptions);
       console.error(error);
@@ -68,10 +81,10 @@ const LoginForm = () => {
           <h1 className="text-black text-2xl font-bold uppercase">Login</h1>
           
           {/* Model Selection */}
-          <select value={model} onChange={handleModelChange} className="bg-transparent border border-[#4e0eff] rounded-md p-4 ">
+          <select value={model} onChange={handleModelChange} className="bg-transparent border border-[#4e0eff] rounded-md p-4">
             <option value="Student">Student</option>
             <option value="Teacher">Teacher</option>
-            <option value="Class">Class</option>
+            <option value="Admin">Admin</option> {/* Ensure you include all relevant models */}
           </select>
           
           <input
@@ -79,14 +92,14 @@ const LoginForm = () => {
             name="email"
             placeholder="Email"
             onChange={handleChange}
-            className="bg-transparent border border-[#4e0eff] rounded-md p-4 text-white"
+            className="bg-transparent border border-[#4e0eff] rounded-md p-4 "
           />
           <input
             type="password"
             name="password"
             placeholder="Password"
             onChange={handleChange}
-            className="bg-transparent border border-[#4e0eff] rounded-md p-4 text-white"
+            className="bg-transparent border border-[#4e0eff] rounded-md p-4 "
           />
           <button
             type="submit"
@@ -95,7 +108,7 @@ const LoginForm = () => {
             Login
           </button>
           <span className="text-black text-center">
-        If account doest exist  <Link to="/register" className="text-[#4e0eff] font-bold">Register</Link>
+            If account does not exist <Link to="/register" className="text-[#4e0eff] font-bold">Register</Link>
           </span>
         </form>
       </div>
