@@ -3,3 +3,5 @@ export const  registerTeacherRoute = `${host}/api/teacher/register`;
 export const loginTeacherRoute = `${host}/api/teacher/login`;
 export const  registerStudentRoute = `${host}/api/student/register`;
 export const loginStudentRoute = `${host}/api/student/login`;
+export const  registerAdminRoute = `${host}/"/api/class"/register`
+export const  loginAdminRoute = `${host}/"/api/class"/login`

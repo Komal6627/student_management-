@@ -15,7 +15,7 @@ const Portals = () => {
       <div className="container mx-auto mt-0">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Admin Card */}
-          <div className="p-4 bg-gray-800 text-white text-center rounded-lg cursor-pointer transform hover:bg-gray-700 hover:scale-105 transition duration-300 ease-in-out">
+          <div onClick={() => navigate("/admin")} className="p-4  bg-gray-800 text-white text-center rounded-lg cursor-pointer transform hover:bg-gray-700 hover:scale-105 transition duration-300 ease-in-out">
             <div className="mb-4 text-5xl">
               <FaUserTie />
             </div>

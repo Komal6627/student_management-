@@ -1,8 +1,12 @@
 import React from 'react'
+import RegistrationForm from '../components/RegistrationForm'
+import LoginForm from '../components/LoginForm'
 
 const Teacher = () => {
   return (
-    <div>Teacher Portal</div>
+   <div>
+     <LoginForm model="Teacher" /> 
+   </div>
   )
 }
 

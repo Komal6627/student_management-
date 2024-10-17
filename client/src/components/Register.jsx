@@ -59,7 +59,7 @@ const Register = () => {
           </div>
           <input
             type="text"
-            placeholder="Name"
+            placeholder="StudentName"
             name="name"
             onChange={handleChange}
             className="bg-transparent border border-[#4e0eff] rounded-md p-4 text-white focus:border-[#997af0] transition"

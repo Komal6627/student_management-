@@ -1,12 +1,11 @@
 import React from 'react'
-import DynamicForm from '../components/Form'
+import RegistrationForm from '../components/RegistrationForm'
+
 
 const Student = () => {
   return (
     <div>
-         {/* <DynamicForm model="Class" />
-<DynamicForm model="Teacher" /> */}
-<DynamicForm model="Student" />
+<RegistrationForm model="Student"/>
     </div>
   )
 }
