@@ -38,7 +38,7 @@ const studentSchema = new mongoose.Schema({
   class: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Class'
-  }
+  },
 });
 
 export default mongoose.model('Student', studentSchema);

@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import Student from '../models/studentModel.js'; 
 import jwt from 'jsonwebtoken';
-import Class from '../models/classModel.js';
+
 
 // Register Student
 export const registerStudent = async (req, res) => {

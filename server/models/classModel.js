@@ -20,13 +20,13 @@ const classSchema = new mongoose.Schema({
   },
   studentList: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Student',
-    validate: [arrayLimit, 'Exceeds the limit of 70 students']
+    ref: 'Student'
   }]
 });
 
-function arrayLimit(val) {
-  return val.length <= 70; 
-}
+// Apply validation to the whole `studentList` array
+classSchema.path('studentList').validate(function (val) {
+  return val.length <= 70;
+}, 'Exceeds the limit of 70 students');
 
 export default mongoose.model('Class', classSchema);

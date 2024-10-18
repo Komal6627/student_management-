@@ -117,3 +117,20 @@ export const deleteTeacher = async (req, res) => {
     }
 };
 
+export const assignClassToTeacher = async (req, res) => {
+  const { classId } = req.body; 
+  try {
+      const teacher = await Teacher.findByIdAndUpdate(
+          req.params.id,
+          { assignedClass: classId },
+          { new: true } 
+      ).populate('assignedClass');
+
+      if (!teacher) return res.status(404).json({ error: 'Teacher not found' });
+
+      res.status(200).json(teacher);
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+};
+
