@@ -5,12 +5,11 @@ import HomePage from "./pages/HomePage";
 import Student from "./pages/Student";
 import Teacher from "./pages/Teacher";
 import Admin from "./pages/Admin";
-import RegistrationForm from "./components/RegistrationForm";
+import RegistrationForm from "./components/Register";
 import LoginForm from "./components/Test";
 import StudentPortal from "./components/StudentPortal";
 import ClassPortal from "./components/ClassPortal";
 import TeacherPortal from "./components/TeacherPortal";
-import StudentsProfile from "./components/TestProfile"; // Ensure the correct import
 import MyComponent from './components/MyComponent';
 import { toast, ToastContainer } from 'react-toastify';
 import { AuthProvider } from './context/TestAuthC';
@@ -27,12 +26,6 @@ function App() {
                 <Route path="/student-portal" element={<StudentPortal />} />
                 <Route path="/teacher-portal" element={<TeacherPortal />} />
                 <Route path="/admin-portal" element={<ClassPortal />} />
-                <Route
-                    path="/student-profile"
-                    element={
-                        <StudentsProfile/>
-                    }
-                />
                 <Route path="/student" element={<Student />} />
                 <Route path="/teacher" element={<Teacher />} />
                 <Route path="/admin" element={<Admin />} />

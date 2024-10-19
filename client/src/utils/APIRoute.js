@@ -8,10 +8,8 @@ export const loginStudentRoute = `${host}/api/student/login`;
 export const  registerAdminRoute = `${host}/"/api/class"/register`
 export const  loginAdminRoute = `${host}/"/api/class"/login`
 export const getStudentProfileRoute = `${host}/api/student/:id`;
-export const createStudentProfileRoute = `${host}/api/student/profile`;
 export const updateStudentProfileRoute = `${host}/api/student/:id`;
 export const getTeacherProfileRoute = `${host}/api/teacher/:id`;
-export const createTeacherProfileRoute = `${host}/api/teacher/profile`;
 export const updateTeacherProfileRoute = `${host}/api/teacher/:id`;
 
 

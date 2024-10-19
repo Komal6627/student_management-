@@ -31,7 +31,7 @@ const teacherSchema = new mongoose.Schema({
 },
   salary: {
     type: Number,
-    required: true
+    required: false
   },
   assignedClass: {
     type: mongoose.Schema.Types.ObjectId,

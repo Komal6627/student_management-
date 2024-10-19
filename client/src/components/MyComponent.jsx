@@ -1,16 +1,21 @@
-import { useAuth } from "../context/AuthContext";
+import React from 'react';
+import { useAuth } from '../context/TestAuthC';
 
 const MyComponent = () => {
-    const { userInfo } = useAuth(); // Get user info from context
+    const { userInfo } = useAuth();
+    
+    // Check if userInfo and userInfo.student exist
+    const student = userInfo?.student;
 
     return (
-        <div className="flex justify-center items-center h-screen bg-gray-100">
-            {userInfo ? (
-                <h1 className="text-2xl font-bold text-purple-600">
-                    Welcome, {userInfo.name}!
-                </h1>
-            ) : (
-                <h1 className="text-xl text-red-500">Please log in.</h1>
+        <div>
+            <h1>Welcome, {student ? student.name : 'Admin'}</h1>
+            {student && (
+                <div>
+                    <p>Email: {student.email}</p>
+                    <p>Fees Paid: {student.feesPaid ? 'Yes' : 'No'}</p>
+                    {/* Add additional fields as necessary */}
+                </div>
             )}
         </div>
     );

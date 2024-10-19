@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 // Register Student
 export const registerStudent = async (req, res) => {
-  const { name, contactNo, email, password } = req.body;
+  const { name, contactNo, email, gender, dateOfBirth,address, password } = req.body;
 
   try {
     const existingStudent = await Student.findOne({ email });
@@ -15,10 +15,7 @@ export const registerStudent = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const student = new Student({
-      name,
-      contactNo,
-      email,
+    const student = new Student({name, contactNo, email,gender, dateOfBirth, address,
       password: hashedPassword,
     });
 
@@ -39,64 +36,36 @@ export const loginStudent = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const student = await Student.findOne({ email });
-    if (!student) {
-      return res.status(404).json({ message: 'Student not found' });
-    }
-
-    const isPasswordCorrect = await bcrypt.compare(password, student.password);
-    if (!isPasswordCorrect) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-
-    const token = jwt.sign({ id: student._id, email: student.email }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    });
-
-    res.status(200).json({ message: 'Login successful', token });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
-  }
-};
-
-
-// Create a new student
-// export const createStudent = async (req, res) => {
-//     try {
-//         const newStudent = new Student(req.body);
-//         await newStudent.save();
-//         res.status(201).json({ success: true, student: newStudent });
-//     } catch (error) {
-//         res.status(400).json({ success: false, message: error.message });
-//     }
-// };
-
-export const createStudentProfile = async (req, res) => {
-  try {
-      // Use req.user from the auth middleware to ensure it's the logged-in student
-      if (!req.user) {
-          return res.status(403).json({ success: false, message: 'You are not authorized to create a profile.' });
+      const student = await Student.findOne({ email });
+      if (!student) {
+          return res.status(404).json({ message: 'Student not found' });
       }
 
-      const profileData = {
-          name: req.body.name,
-          gender: req.body.gender,
-          year: req.body.year,
-          dateOfBirth: req.body.dateOfBirth,
-          address: req.body.address,
-          email: req.body.email,
-          contactNo: req.body.contactNo,
-          feesPaid: req.body.feesPaid,
-          studentId: req.user._id, // Link the profile to the logged-in student
-      };
+      const isPasswordCorrect = await bcrypt.compare(password, student.password);
+      if (!isPasswordCorrect) {
+          return res.status(400).json({ message: 'Invalid credentials' });
+      }
 
-      const newStudentProfile = new Student(profileData);
-      await newStudentProfile.save();
-      res.status(201).json({ success: true, studentProfile: newStudentProfile });
+      const token = jwt.sign({ id: student._id, email: student.email }, process.env.JWT_SECRET, {
+          expiresIn: '1h',
+      });
+
+      // Include student data in the response
+      res.status(200).json({
+          message: 'Login successful',
+          token,
+          user: {
+              id: student._id, // Include student ID
+              email: student.email,
+              // Include any other relevant fields you may want
+          },
+      });
   } catch (error) {
-      res.status(400).json({ success: false, message: error.message });
+      console.error(error); // It's good practice to log errors
+      res.status(500).json({ message: 'Server error', error });
   }
 };
+
 
 
 // Get all students

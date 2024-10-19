@@ -1,71 +1,241 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useAuth } from '../context/TestAuthC';
 import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
-import { useAuth } from '../context/AuthContext';
-import { getStudentProfileRoute } from '../utils/APIRoute';
-import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const StudentPortal = () => {
-  const { userInfo, isAuthenticated } = useAuth();
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
+    const { userInfo } = useAuth();
+    const [student, setStudent] = useState({
+        name: userInfo?.student?.name || '',
+        email: userInfo?.student?.email || '',
+        gender: userInfo?.student?.gender || '',
+        year: userInfo?.student?.year || '',
+        dateOfBirth: userInfo?.student?.dateOfBirth || '',
+        address: userInfo?.student?.address || '',
+        contactNo: userInfo?.student?.contactNo || '',
+    });
+    const [isEditing, setIsEditing] = useState(false);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (isAuthenticated && userInfo?.id) {
-        try {
-          const response = await axios.get(`${getStudentProfileRoute}/${userInfo.id}`);
-          console.log('Profile Response:', response.data); // Log API response
-          setProfile(response.data);
-        } catch (error) {
-          toast.error('Error fetching student profile');
-          console.error(error);
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setLoading(false);
-      }
+    const toastOptions = {
+        position: 'bottom-right',
+        autoClose: 5000,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'dark',
     };
 
-    fetchProfile();
-  }, [isAuthenticated, userInfo?.id]);
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setStudent((prev) => ({ ...prev, [name]: value }));
+    };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const userId = JSON.parse(localStorage.getItem('user')).id; // Get the user ID
+        console.log("Student ID for update:", userId);
+        
+        if (userId) {
+            try {
+                const response = await axios.put(`http://localhost:5000/api/student/${userId}`, {
+                    name: student.name,
+                    email: student.email,
+                    gender: student.gender,
+                    dateOfBirth: student.dateOfBirth,
+                    address: student.address,
+                    contactNo: student.contactNo,
+                });
 
-  if (!profile) {
+                if (response.data.success) {
+                    toast.success('Student information updated successfully', toastOptions);
+                    setStudent((prev) => ({ ...prev, ...response.data.student }));
+                } else {
+                    toast.error('Failed to update student information', toastOptions);
+                }
+            } catch (error) {
+                console.error('Error updating student info:', error);
+                toast.error('Error updating student information', toastOptions);
+            }
+        } else {
+            console.error('No user ID found for update');
+            toast.error('User ID not found', toastOptions);
+        }
+    };
+
+    const handleDelete = async () => {
+        const userId = JSON.parse(localStorage.getItem('user')).id; // Get the user ID
+        
+        if (userId) {
+            const confirmDelete = window.confirm('Are you sure you want to delete your account? This action cannot be undone.');
+
+            if (confirmDelete) {
+                try {
+                    const response = await axios.delete(`http://localhost:5000/api/student/${userId}`);
+
+                    if (response.data.success) {
+                        toast.success('Student account deleted successfully', toastOptions);
+                        // Optionally redirect to login or home page after deletion
+                        // window.location.href = '/login'; // Uncomment to redirect to login
+                    } else {
+                        toast.error('Failed to delete student account', toastOptions);
+                    }
+                } catch (error) {
+                    console.error('Error deleting student account:', error);
+                    toast.error('Error deleting student account', toastOptions);
+                }
+            }
+        } else {
+            console.error('No user ID found for deletion');
+            toast.error('User ID not found', toastOptions);
+        }
+    };
+
     return (
-      <div className="p-4 text-center">
-        <h1 className="text-2xl font-bold">No Profile Found</h1>
-        <p className="my-4">It seems you haven't created a profile yet.</p>
-        <Link
-          to="/student-profile" // Adjust to your actual create profile route
-          className="text-[#4e0eff] underline hover:text-blue-700"
-        >
-          Click here to create your profile.
-        </Link>
-      </div>
+        <div className="flex flex-col items-center p-4">
+            <h1 className="text-2xl font-bold text-blue-600 text-center">
+                Welcome, {student.name || 'Student'}
+            </h1>
+            {student ? (
+                <form onSubmit={handleSubmit}>
+                    <table className="mt-4 border border-collapse border-gray-300 w-full max-w-2xl text-left">
+                        <thead>
+                            <tr>
+                                <th className="border border-gray-300 p-2">Attribute</th>
+                                <th className="border border-gray-300 p-2">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td className="border border-gray-300 p-2">Name</td>
+                                <td className="border border-gray-300 p-2">
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={student.name}
+                                            onChange={handleChange}
+                                            className="border border-gray-400 rounded p-1"
+                                        />
+                                    ) : (
+                                        student.name
+                                    )}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="border border-gray-300 p-2">Email</td>
+                                <td className="border border-gray-300 p-2">
+                                    {isEditing ? (
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={student.email}
+                                            onChange={handleChange}
+                                            className="border border-gray-400 rounded p-1"
+                                        />
+                                    ) : (
+                                        student.email
+                                    )}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="border border-gray-300 p-2">Gender</td>
+                                <td className="border border-gray-300 p-2">
+                                    {isEditing ? (
+                                        <select
+                                            name="gender"
+                                            value={student.gender}
+                                            onChange={handleChange}
+                                            className="border border-gray-400 rounded p-1"
+                                        >
+                                            <option value="" disabled>Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    ) : (
+                                        student.gender
+                                    )}
+                                </td>
+                            </tr>
+                           
+                            <tr>
+                                <td className="border border-gray-300 p-2">Date of Birth</td>
+                                <td className="border border-gray-300 p-2">
+                                    {isEditing ? (
+                                        <input
+                                            type="date"
+                                            name="dateOfBirth"
+                                            value={student.dateOfBirth ? student.dateOfBirth.split('T')[0] : ''}
+                                            onChange={handleChange}
+                                            className="border border-gray-400 rounded p-1"
+                                        />
+                                    ) : (
+                                        student.dateOfBirth || 'N/A'
+                                    )}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="border border-gray-300 p-2">Address</td>
+                                <td className="border border-gray-300 p-2">
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            name="address"
+                                            value={student.address}
+                                            onChange={handleChange}
+                                            className="border border-gray-400 rounded p-1"
+                                        />
+                                    ) : (
+                                        student.address
+                                    )}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="border border-gray-300 p-2">Contact No</td>
+                                <td className="border border-gray-300 p-2">
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            name="contactNo"
+                                            value={student.contactNo}
+                                            onChange={handleChange}
+                                            className="border border-gray-400 rounded p-1"
+                                        />
+                                    ) : (
+                                        student.contactNo
+                                    )}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div className="mt-4 flex justify-center space-x-2">
+                        <button
+                            type="button"
+                            onClick={() => setIsEditing((prev) => !prev)}
+                            className="bg-blue-500 text-white py-2 px-4 rounded"
+                        >
+                            {isEditing ? "Back" : "Edit"}
+                        </button>
+                        {isEditing && (
+                            <button
+                                type="submit"
+                                className="bg-green-500 text-white py-2 px-4 rounded"
+                            >
+                                Save
+                            </button>
+                        )}
+                    </div>
+                </form>
+            ) : (
+                <p>No student data available.</p>
+            )}
+            <button
+                onClick={handleDelete}
+                className="mt-4 bg-red-500 text-white py-2 px-4 rounded"
+            >
+                Delete Account
+            </button>
+        </div>
     );
-  }
-
-  return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold">Student Profile</h1>
-      <div className="border p-4 my-4 rounded-md">
-        <h2 className="text-lg font-semibold">{profile.name}</h2>
-        <p><strong>Gender:</strong> {profile.gender}</p>
-        <p><strong>Year:</strong> {profile.year}</p>
-        <p><strong>Date of Birth:</strong> {profile.dateOfBirth}</p>
-        <p><strong>Address:</strong> {profile.address}</p>
-        <p><strong>Email:</strong> {profile.email}</p>
-        <p><strong>Contact Number:</strong> {profile.contactNo}</p>
-        <p><strong>Fees Paid:</strong> {profile.feesPaid ? 'Yes' : 'No'}</p>
-      </div>
-      <ToastContainer />
-    </div>
-  );
 };
 
 export default StudentPortal;

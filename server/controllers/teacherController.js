@@ -4,10 +4,9 @@ import jwt from 'jsonwebtoken';
 
 //Register
 export const registerTeacher = async (req, res) => {
-  const { name, contactNo, email, password } = req.body;
+  const { name, contactNo, email, gender, dateOfBirth,address, password } = req.body;
 
   try {
-
     const existingTeacher = await Teacher.findOne({ email });
     if (existingTeacher) {
       return res.status(400).json({ message: 'Teacher already exists' });
@@ -15,13 +14,9 @@ export const registerTeacher = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const teacher = new Teacher({
-      name,
-      contactNo,
-      email,
+    const teacher = new Teacher({name, contactNo, email,gender, dateOfBirth, address,
       password: hashedPassword,
     });
-
 
     await teacher.save();
 
@@ -33,6 +28,7 @@ export const registerTeacher = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
+
 };
 
 // Login 
@@ -63,16 +59,6 @@ export const loginTeacher = async (req, res) => {
 
 
 
-// Create a new teacher
-export const createTeacher = async (req, res) => {
-    try {
-        const newTeacher = new Teacher(req.body);
-        await newTeacher.save();
-        res.status(201).json(newTeacher);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
 
 // Get all teachers
 export const getTeachers = async (req, res) => {
