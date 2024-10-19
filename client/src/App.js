@@ -6,18 +6,20 @@ import Student from "./pages/Student";
 import Teacher from "./pages/Teacher";
 import Admin from "./pages/Admin";
 import RegistrationForm from "./components/RegistrationForm";
-import LoginForm from "./components/LoginForm";
+import LoginForm from "./components/Test";
 import StudentPortal from "./components/StudentPortal";
 import ClassPortal from "./components/ClassPortal";
 import TeacherPortal from "./components/TeacherPortal";
-import StudentsProfile from "./components/StudentsProfile"; // Ensure the correct import
+import StudentsProfile from "./components/TestProfile"; // Ensure the correct import
 import MyComponent from './components/MyComponent';
 import { toast, ToastContainer } from 'react-toastify';
+import { AuthProvider } from './context/TestAuthC';
 
 function App() {
     const [studentData, setStudentData] = useState(null); // Initialize student data state
 
     return (
+        <AuthProvider>
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<HomePage />} />
@@ -36,9 +38,10 @@ function App() {
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/register" element={<RegistrationForm />} />
                 <Route path="/login" element={<LoginForm />} />
+                 <Route path='/test'  element={<MyComponent/>}/>
             </Routes>
         </BrowserRouter>
-        
+        </AuthProvider>
     );
 }
 

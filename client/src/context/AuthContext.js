@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Create a Context for Authentication
 const AuthContext = createContext();
@@ -6,15 +6,20 @@ const AuthContext = createContext();
 // Create a Provider Component
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userInfo, setUserInfo] = useState(null); // Store user info
+  const [userInfo, setUserInfo] = useState({}); // Store user info
+  const [userToken, setUserToken] = useState(null);
 
-  const login = (token) => {
+  const login = (token, user) => {
     setIsAuthenticated(true);
-    setUserInfo(); // Store user info
+    // setUserInfo(user); // Store user info
     // Optionally, you can store the user's info in local storage or session storage
     localStorage.setItem('token', token);
     // localStorage.setItem('userInfo', JSON.stringify(user));
+    localStorage['userInfo'] = JSON.stringify(user);
   };
+
+
+
 
   const logout = () => {
     setIsAuthenticated(false);
@@ -24,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout , userInfo}}>
       {children}
     </AuthContext.Provider>
   );

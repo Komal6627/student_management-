@@ -4,7 +4,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { loginStudentRoute, loginTeacherRoute, loginAdminRoute } from '../utils/APIRoute';
 import 'react-toastify/ReactToastify.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // Import your AuthContext
+import { useAuth } from '../context/TestAuthC'; // Import your AuthContext
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -51,42 +51,38 @@ const LoginForm = () => {
 
   const handleLogin = async (data, model) => {
     try {
-        let endpoint = '';
-        if (model === 'Teacher') endpoint = loginTeacherRoute;
-        if (model === 'Student') endpoint = loginStudentRoute;
-        if (model === 'Admin') endpoint = loginAdminRoute;
-
-        const response = await axios.post(endpoint, data);
+      let endpoint = '';
+      if (model === 'Teacher') endpoint = loginTeacherRoute;
+      if (model === 'Student') endpoint = loginStudentRoute;
+      if (model === 'Admin') endpoint = loginAdminRoute;
+  
+      const response = await axios.post(endpoint, data);
+      console.log('API response:', response.data); // Log the API response to debug
+  
+      // Check if the response contains a token
+      if (response.data && response.data.token) {
+        const { token } = response.data;  // Extract the token
+        login(token, formData);  // Call the login function, passing the token and form data as user information
+        console.log("Login successful");
         
-        // Log the response for debugging
-        console.log("Response from login:", response.data);
-
-        // Check if the API response has the correct structure
-        if (response.data && response.data.token ) {
-            const { token } = response.data; // Extract token and user
-            login(token); // Call the login function with the token and user
-            console.log("Full response:", response);
-
-            toast.success('Login successful!', toastOptions);
-
-            // Navigate to the respective portal based on the model
-            navigate(`/${model.toLowerCase()}-portal`);
-        } else {
-            // Handle case when the response structure is not as expected
-            toast.error('Invalid login response', toastOptions);
-        }
+        toast.success(response.data.message || 'Login successful!', toastOptions); // Use message from response
+        navigate(`/${model.toLowerCase()}-portal`);
+      } else {
+        // Handle case when the token is not present
+        toast.error('Invalid login response', toastOptions);
+      }
     } catch (error) {
-        // Check if the error response exists to determine if it's an invalid login
-        if (error.response && error.response.data) {
-            toast.error(error.response.data.message || 'Error logging in', toastOptions);
-        } else {
-            toast.error('Error logging in', toastOptions);
-        }
-        console.error(error);
+      // Check if it's an authentication error (401 Unauthorized)
+      if (error.response && error.response.status === 401) {
+        toast.error('Invalid email or password', toastOptions);
+      } else {
+        toast.error('Error logging in', toastOptions);
+      }
+      console.error('Error during login:', error);
     }
-};
-
-
+  };
+  
+  
 
 
   return (

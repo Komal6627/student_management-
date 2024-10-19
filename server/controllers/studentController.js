@@ -61,15 +61,43 @@ export const loginStudent = async (req, res) => {
 
 
 // Create a new student
-export const createStudent = async (req, res) => {
-    try {
-        const newStudent = new Student(req.body);
-        await newStudent.save();
-        res.status(201).json({ success: true, student: newStudent });
-    } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
-    }
+// export const createStudent = async (req, res) => {
+//     try {
+//         const newStudent = new Student(req.body);
+//         await newStudent.save();
+//         res.status(201).json({ success: true, student: newStudent });
+//     } catch (error) {
+//         res.status(400).json({ success: false, message: error.message });
+//     }
+// };
+
+export const createStudentProfile = async (req, res) => {
+  try {
+      // Use req.user from the auth middleware to ensure it's the logged-in student
+      if (!req.user) {
+          return res.status(403).json({ success: false, message: 'You are not authorized to create a profile.' });
+      }
+
+      const profileData = {
+          name: req.body.name,
+          gender: req.body.gender,
+          year: req.body.year,
+          dateOfBirth: req.body.dateOfBirth,
+          address: req.body.address,
+          email: req.body.email,
+          contactNo: req.body.contactNo,
+          feesPaid: req.body.feesPaid,
+          studentId: req.user._id, // Link the profile to the logged-in student
+      };
+
+      const newStudentProfile = new Student(profileData);
+      await newStudentProfile.save();
+      res.status(201).json({ success: true, studentProfile: newStudentProfile });
+  } catch (error) {
+      res.status(400).json({ success: false, message: error.message });
+  }
 };
+
 
 // Get all students
 export const getAllStudents = async (req, res) => {
