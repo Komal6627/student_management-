@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
         }
 
         try {
-            const response = await axios.post(`http://localhost:5000${loginRoute}`, credentials);
+            const response = await axios.post(`hhttps://student-management-he5k.onrender.com${loginRoute}`, credentials);
             const { token, user } = response.data;
 
             // Set user info and authentication state
@@ -53,15 +53,15 @@ export const AuthProvider = ({ children }) => {
         const userType = userInfo?.type; // Make sure this is being set correctly
         switch (userType) {
             case 'student':
-                profileRoute = `http://localhost:5000/api/student/${userId}`;
+                profileRoute = `hhttps://student-management-he5k.onrender.com/api/student/${userId}`;
                 console.log('Fetching student profile...');
                 break;
             case 'teacher':
-                profileRoute = `http://localhost:5000/api/teacher/${userId}`;
+                profileRoute = `hhttps://student-management-he5k.onrender.com/api/teacher/${userId}`;
                 console.log('Fetching teacher profile...');
                 break;
             case 'admin':
-                profileRoute = `http://localhost:5000/api/class/${userId}`;
+                profileRoute = `hhttps://student-management-he5k.onrender.com/api/class/${userId}`;
                 console.log('Fetching admin profile...');
                 break;
             default:

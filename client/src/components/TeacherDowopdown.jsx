@@ -8,7 +8,7 @@ const TeacherDropdown = ({ onSelectTeacher }) => {
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/teacher');
+        const response = await axios.get('hhttps://student-management-he5k.onrender.com/api/teacher');
         setTeachers(response.data);
       } catch (error) {
         setError('Error fetching teachers. Please try again later.');

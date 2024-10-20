@@ -80,11 +80,11 @@ const LoginForm = () => {
     const getLoginEndpoint = (model) => {
         switch (model) {
             case 'student':
-                return 'http://localhost:5000/api/student/login';
+                return 'hhttps://student-management-he5k.onrender.com/api/student/login';
             case 'teacher':
-                return 'http://localhost:5000/api/teacher/login';
+                return 'hhttps://student-management-he5k.onrender.com/api/teacher/login';
             case 'admin':
-                return 'http://localhost:5000/api/class/login';
+                return 'hhttps://student-management-he5k.onrender.com/api/class/login';
             default:
                 throw new Error('Unknown model');
         }

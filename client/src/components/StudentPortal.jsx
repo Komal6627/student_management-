@@ -59,7 +59,7 @@ const StudentPortal = () => {
     
         if (userId) {
             try {
-                const response = await axios.put(`http://localhost:5000/api/student/${userId}`, {
+                const response = await axios.put(`hhttps://student-management-he5k.onrender.com/api/student/${userId}`, {
                     name: student.name,
                     email: student.email,
                     gender: student.gender,
@@ -93,7 +93,7 @@ const StudentPortal = () => {
 
             if (confirmDelete) {
                 try {
-                    const response = await axios.delete(`http://localhost:5000/api/student/${userId}`);
+                    const response = await axios.delete(`hhttps://student-management-he5k.onrender.com/api/student/${userId}`);
 
                     if (response.data.success) {
                         toast.success('Student account deleted successfully', toastOptions);

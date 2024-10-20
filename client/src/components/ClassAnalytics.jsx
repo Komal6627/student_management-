@@ -12,7 +12,7 @@ const ClassAnalytics = () => {
     const fetchClassAnalytics = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/class/${classId}`
+          `https://student-management-he5k.onrender.com/api/class/${classId}`
         );
         console.log("Fetched class data:", response.data); // Log for debugging
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const host = "http://localhost:5000";
+const host = "hhttps://student-management-he5k.onrender.com";
 export const  registerTeacherRoute = `${host}/api/teacher/register`;
 export const loginTeacherRoute = `${host}/api/teacher/login`;
 export const  registerStudentRoute = `${host}/api/student/register`;

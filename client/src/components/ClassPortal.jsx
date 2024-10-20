@@ -15,7 +15,7 @@ const ClassPortal = () => {
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/teacher");
+        const response = await axios.get("hhttps://student-management-he5k.onrender.com/api/teacher");
         console.log("Fetched teachers:", response.data); // Check API response
         setTeachers(response.data.teachers || []); // Ensure this matches your API response structure
       } catch (error) {
@@ -26,7 +26,7 @@ const ClassPortal = () => {
 
     const fetchClasses = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/class");
+        const response = await axios.get("hhttps://student-management-he5k.onrender.com/api/class");
         console.log("Fetched classes:", response.data); // Check API response
         setClasses(response.data.classes || []);
       } catch (error) {
@@ -43,7 +43,7 @@ const ClassPortal = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/class/create",
+        "hhttps://student-management-he5k.onrender.com/api/class/create",
         {
           className,
           year: Number(year),
