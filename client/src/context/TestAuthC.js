@@ -1,8 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode'; // Don't forget to install this if you haven't
-import { toast } from 'react-toastify'; // If you're using toast for notifications
-import { loginStudentRoute } from '../utils/APIRoute';
+import {jwtDecode} from 'jwt-decode'; // Ensure this is imported correctly
+import { toast } from 'react-toastify';
 
 const AuthContext = createContext();
 
@@ -10,61 +9,122 @@ export const AuthProvider = ({ children }) => {
     const [userInfo, setUserInfo] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    // Function to log in the user
-    const login = async (credentials) => {
-      try {
-          const response = await axios.post(loginStudentRoute, credentials);
-          const { token, user } = response.data;
-  
-          // Extract user ID from the token
-          const userId = extractUserIdFromToken(token);
-  
-          // Fetch user profile
-          await fetchUserProfile(userId, token); // Fetch profile
-  
-          setUserInfo({ ...user, token }); // Save user data and token separately
-          setIsAuthenticated(true);
-          localStorage.setItem('authToken', token); // Persist token
-      } catch (error) {
-          console.error('Login failed:', error);
-          toast.error('Login failed. Please try again.'); // Provide feedback to the user
-          throw error; // Allow error handling in the component
-      }
-  };
-  
-  const fetchUserProfile = async (userId, token) => {
-      try {
-          const response = await axios.get(`http://localhost:5000/api/student/${userId}`, {
-              headers: { Authorization: `Bearer ${token}` },
-          });
-          setUserInfo({ ...response.data, token }); // Set user info based on the fetched data
-          console.log('User Info after login:', { ...response.data, token });
-          setIsAuthenticated(true);
-      } catch (error) {
-          console.error('Failed to fetch user profile:', error);
-          setIsAuthenticated(false);
-          toast.error('Failed to fetch user profile.'); // Provide feedback to the user
-      }
-  };
-  
+    const login = async (credentials, userType) => {
+        let loginRoute;
+        console.log('User Type to Login:', userType);
 
-    // Function to extract user ID from token
-    const extractUserIdFromToken = (token) => {
-        const decodedToken = jwtDecode(token);
-        return decodedToken.id; // Adjust based on your token structure
+        switch (userType) {
+            case 'student':
+                loginRoute = '/api/student/login';
+                break;
+            case 'teacher':
+                loginRoute = '/api/teacher/login';
+                break;
+            case 'admin':
+                loginRoute = '/api/class/login';
+                break;
+            default:
+                throw new Error('Invalid user type');
+        }
+
+        try {
+            const response = await axios.post(`http://localhost:5000${loginRoute}`, credentials);
+            const { token, user } = response.data;
+
+            if (!token || !user) {
+                throw new Error('Invalid login response');
+            }
+
+            // Set user info and authentication state
+            setUserInfo({ ...user, token, userType });
+            setIsAuthenticated(true);
+            localStorage.setItem('authToken', token);
+            localStorage.setItem('userId', user.id);
+            console.log("userId", user.id);
+            localStorage.setItem('user', JSON.stringify(user)); // Corrected line
+            console.log('user', user);
+            
+            // Fetch user profile immediately after login
+            await fetchUserProfile(user.id, token); // Fetch profile after login
+            
+        } catch (error) {
+            console.error('Login failed:', error);
+            toast.error('Login failed. Please try again.');
+            throw error;
+        }
     };
 
-    // Effect to check for existing token on initial load
+    const fetchUserProfile = async (userId, token) => {
+        let profileRoute;
+
+        // Check the user type from userInfo or another state/context
+        console.log('User Type during profile fetch:', userInfo?.type);
+
+        const userType = userInfo?.type; // Ensure this is being set correctly
+        switch (userType) {
+            case 'student':
+                profileRoute = `http://localhost:5000/api/student/${userId}`;
+                console.log('Fetching student profile...');
+                break;
+            case 'teacher':
+                profileRoute = `http://localhost:5000/api/teacher/${userId}`;
+                console.log('Fetching teacher profile...');
+                break;
+            case 'admin':
+                profileRoute = `http://localhost:5000/api/class/${userId}`;
+                console.log('Fetching admin profile...');
+                break;
+            default:
+                console.error('Unknown user type:', userType);
+                return;
+        }
+
+        // Log the API route being used
+        console.log('Profile route:', profileRoute);
+
+        try {
+            const response = await axios.get(profileRoute, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            console.log('User Profile Fetched:', response.data);
+            setUserInfo({ ...response.data, token }); // Update user info with profile data
+            setIsAuthenticated(true);
+            
+            
+        } catch (error) {
+            console.error('Failed to fetch user profile:', error);
+            setIsAuthenticated(false);
+            setUserInfo(null);
+            localStorage.removeItem('authToken');
+            toast.error('Failed to fetch user profile. Please log in again.');
+        }
+    };
+
+    const extractUserIdFromToken = (token) => {
+        try {
+            const decodedToken = jwtDecode(token);
+            return decodedToken.id;
+        } catch (error) {
+            console.error('Failed to decode token:', error);
+            return null;
+        }
+    };
+
     useEffect(() => {
         const token = localStorage.getItem('authToken');
         if (token) {
             const userId = extractUserIdFromToken(token);
-            fetchUserProfile(userId, token); // Fetch user profile on initial load
+            if (userId) {
+                fetchUserProfile(userId, token);
+            } else {
+                toast.error('Invalid token. Please log in again.');
+                localStorage.removeItem('authToken');
+            }
         }
     }, []);
 
     return (
-        <AuthContext.Provider value={{ userInfo, isAuthenticated, login, fetchUserProfile, extractUserIdFromToken }}>
+        <AuthContext.Provider value={{ userInfo, isAuthenticated, login, fetchUserProfile, extractUserIdFromToken, setIsAuthenticated }}>
             {children}
         </AuthContext.Provider>
     );

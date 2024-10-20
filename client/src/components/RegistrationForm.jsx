@@ -6,8 +6,16 @@ import 'react-toastify/ReactToastify.css';
 import { Link, useNavigate } from 'react-router-dom';
 
 const RegistrationForm = () => {
-  const navigate = useNavigate()
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    gender: '',
+    dateOfBirth: '',
+    address: '',
+    contactNo: '',
+    password: '',
+  });
   const [model, setModel] = useState('Student'); // Default model
 
   const toastOptions = {
@@ -19,7 +27,8 @@ const RegistrationForm = () => {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleModelChange = (e) => {
@@ -31,18 +40,35 @@ const RegistrationForm = () => {
     const isValid = handleValidation();
     if (isValid) {
       await handleFormSubmit(formData, model);
+      navigate("/login"); // Navigate after form submission
     }
-    navigate("/login")
   };
 
   const handleValidation = () => {
-    const { password, name, email } = formData;
+    const { password, name, email, gender, dateOfBirth, address, contactNo } = formData;
     if (!name || name.length < 3) {
       toast.error('Name should be at least 3 characters long', toastOptions);
       return false;
     }
     if (!email) {
       toast.error('Email is required', toastOptions);
+      return false;
+    }
+    if (!gender) {
+      toast.error('Gender is required', toastOptions);
+      return false;
+    }
+   
+    if (!dateOfBirth) {
+      toast.error('Date of Birth is required', toastOptions);
+      return false;
+    }
+    if (!address) {
+      toast.error('Address is required', toastOptions);
+      return false;
+    }
+    if (!contactNo || contactNo.length < 10) {
+      toast.error('Contact Number should be at least 10 digits', toastOptions);
       return false;
     }
     if (!password || password.length < 8) {
@@ -69,12 +95,19 @@ const RegistrationForm = () => {
 
   return (
     <>
-      <div className="flex h-screen justify-center items-center">
-        <form onSubmit={handleSubmit} className="bg-opacity-75 rounded-2xl p-12 flex flex-col gap-8 w-full max-w-sm">
-          <h1 className="text-black text-2xl font-bold uppercase">{model} Registration</h1>
+      <div className="flex h-screen justify-center items-center overflow-hidden p-4">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-opacity-75 rounded-2xl p-8 flex flex-col gap-4 w-full max-w-md max-h-[90vh] overflow-y-auto"
+        >
+          <h1 className="text-black text-2xl font-bold uppercase text-center">{model} Registration</h1>
 
           {/* Model Selection Dropdown */}
-          <select value={model} onChange={handleModelChange} className="bg-transparent border border-[#4e0eff] rounded-md p-4 ">
+          <select
+            value={model}
+            onChange={handleModelChange}
+            className="bg-transparent border border-[#4e0eff] rounded-md p-4"
+          >
             <option value="Student">Student</option>
             <option value="Teacher">Teacher</option>
             <option value="Admin">Admin</option>
@@ -85,22 +118,68 @@ const RegistrationForm = () => {
             name="name"
             placeholder={`${model} Name`}
             onChange={handleChange}
-            className="bg-transparent border border-[#4e0eff] rounded-md p-4 "
+            className="bg-transparent border border-[#4e0eff] rounded-md p-4"
+            required
           />
           <input
             type="email"
             name="email"
             placeholder={`${model} Email`}
             onChange={handleChange}
-            className="bg-transparent border border-[#4e0eff] rounded-md p-4 "
+            className="bg-transparent border border-[#4e0eff] rounded-md p-4"
+            required
           />
+
+          {/* Gender Dropdown */}
+          <select
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            className="bg-transparent border border-[#4e0eff] rounded-md p-4"
+            required
+          >
+            <option value="" disabled>Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+
+          {/* Additional Fields */}
+         
+          <input
+            type="date"
+            name="dateOfBirth"
+            onChange={handleChange}
+            className="bg-transparent border border-[#4e0eff] rounded-md p-4"
+            required
+          />
+          <input
+            type="text"
+            name="address"
+            placeholder="Address"
+            onChange={handleChange}
+            className="bg-transparent border border-[#4e0eff] rounded-md p-4"
+            required
+          />
+          <input
+            type="text"
+            name="contactNo"
+            placeholder="Contact Number"
+            onChange={handleChange}
+            className="bg-transparent border border-[#4e0eff] rounded-md p-4"
+            required
+          />
+
+          {/* Move Password to Last */}
           <input
             type="password"
             name="password"
             placeholder="Password"
             onChange={handleChange}
-            className="bg-transparent border border-[#4e0eff] rounded-md p-4 "
+            className="bg-transparent border border-[#4e0eff] rounded-md p-4"
+            required
           />
+
           <button
             type="submit"
             className="bg-[#997af0] text-white py-4 rounded-md font-bold text-lg transition duration-500 hover:bg-[#4e0eff]"

@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
-import { loginStudentRoute, loginTeacherRoute, loginAdminRoute } from '../utils/APIRoute';
-import 'react-toastify/ReactToastify.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/TestAuthC'; // Ensure this path is correct
+import { useAuth } from '../context/AuthContext.js';
+import 'react-toastify/ReactToastify.css';
 
 const LoginForm = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [model, setModel] = useState('Student'); // Default model
-    const navigate = useNavigate(); // Hook to navigate
-    const { login, fetchUserProfile, extractUserIdFromToken } = useAuth(); 
+    const navigate = useNavigate();
+    const { login } = useAuth();
 
     const toastOptions = {
         position: 'bottom-right',
@@ -28,13 +27,6 @@ const LoginForm = () => {
         setModel(e.target.value);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (handleValidation()) {
-            await handleLogin(formData, model);
-        }
-    };
-
     const handleValidation = () => {
         const { email, password } = formData;
         if (!email) {
@@ -48,53 +40,51 @@ const LoginForm = () => {
         return true;
     };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (handleValidation()) {
+            console.log('Form Data before login:', formData);
+            await handleLogin(formData, model);
+        }
+    };
+
     const handleLogin = async (data, model) => {
-      try {
-          const endpoint = getLoginEndpoint(model);
-          const response = await axios.post(endpoint, data);
-          console.log('API response:', response.data); // Log the full response to debug
-  
-          if (response.data && response.data.token) {
-              const { token } = response.data; // Extract token directly
-              const student = response.data.student || response.data.user; // Ensure correct extraction of student info
-  
-              // Store token and user info in local storage
-              localStorage.setItem('token', token);
-              localStorage.setItem('user', JSON.stringify(student));
-  
-              // Existing logic...
-              await login({ ...data, token });
-              console.log("User info after login:", student); // Log the student info
-              
-              const userId = extractUserIdFromToken(token);
-              if (userId) {
-                  await fetchUserProfile(userId, token);
-              }
-  
-              console.log("Login successful");
-              toast.success(response.data.message || 'Login successful!', toastOptions);
-              navigate(`/${model.toLowerCase()}-portal`);
-          } else {
-              toast.error('Invalid login response', toastOptions);
-          }
-      } catch (error) {
-          console.error('Error during login:', error);
-          const errorMessage = error.response?.status === 401 
-              ? 'Invalid email or password' 
-              : 'Error logging in';
-          toast.error(errorMessage, toastOptions);
-      }
-  };
-  
+        try {
+            const normalizedModel = model.toLowerCase();
+            const endpoint = getLoginEndpoint(normalizedModel);
+            const response = await axios.post(endpoint, data);
+            
+            console.log('Login Response:', response.data);
+
+            const { token, user } = response.data; // Extract user data directly
+
+            if (token && user) {
+                console.log('User:', user);
+                // Store the user data along with the token
+                localStorage.setItem('authToken', JSON.stringify({ token, user }));
+                await login({ ...data, token, user }, normalizedModel); // Pass user data
+                navigate(`/${normalizedModel}-portal`);
+                toast.success('Login successful!', toastOptions);
+            } else {
+                toast.error('Invalid login response', toastOptions);
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            const errorMessage = error.response?.status === 401 
+                ? 'Invalid email or password' 
+                : 'Error logging in';
+            toast.error(errorMessage, toastOptions);
+        }
+    };
 
     const getLoginEndpoint = (model) => {
         switch (model) {
-            case 'Teacher':
-                return loginTeacherRoute;
-            case 'Student':
-                return loginStudentRoute;
-            case 'Admin':
-                return loginAdminRoute;
+            case 'student':
+                return 'http://localhost:5000/api/student/login';
+            case 'teacher':
+                return 'http://localhost:5000/api/teacher/login';
+            case 'admin':
+                return 'http://localhost:5000/api/class/login';
             default:
                 throw new Error('Unknown model');
         }
@@ -106,7 +96,6 @@ const LoginForm = () => {
                 <form onSubmit={handleSubmit} className="bg-opacity-75 rounded-2xl p-12 flex flex-col gap-8 w-full max-w-sm">
                     <h1 className="text-black mx-10 text-2xl font-bold uppercase">{model} Login</h1>
 
-                    {/* Model Selection */}
                     <select value={model} onChange={handleModelChange} className="bg-transparent border border-[#4e0eff] rounded-md p-4">
                         <option value="Student">Student</option>
                         <option value="Teacher">Teacher</option>
@@ -117,6 +106,7 @@ const LoginForm = () => {
                         type="email"
                         name="email"
                         placeholder="Email"
+                        value={formData.email}
                         onChange={handleChange}
                         className="bg-transparent border border-[#4e0eff] rounded-md p-4"
                         required
@@ -125,6 +115,7 @@ const LoginForm = () => {
                         type="password"
                         name="password"
                         placeholder="Password"
+                        value={formData.password}
                         onChange={handleChange}
                         className="bg-transparent border border-[#4e0eff] rounded-md p-4"
                         required

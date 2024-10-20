@@ -5,36 +5,41 @@ import HomePage from "./pages/HomePage";
 import Student from "./pages/Student";
 import Teacher from "./pages/Teacher";
 import Admin from "./pages/Admin";
-import RegistrationForm from "./components/Register";
-import LoginForm from "./components/Test";
+import RegistrationForm from "./components/RegistrationForm";
+import LoginForm from "./components/LoginForm.jsx";
 import StudentPortal from "./components/StudentPortal";
 import ClassPortal from "./components/ClassPortal";
 import TeacherPortal from "./components/TeacherPortal";
 import MyComponent from './components/MyComponent';
-import { toast, ToastContainer } from 'react-toastify';
-import { AuthProvider } from './context/TestAuthC';
+import { AuthProvider } from './context/AuthContext.js';
+import ClassAnalytics from './components/ClassAnalytics';
+import ClassManagement from './components/ClassManagement.jsx';
+import TeacherDropdown from './components/TeacherDowopdown.jsx';
+
 
 function App() {
-    const [studentData, setStudentData] = useState(null); // Initialize student data state
+
 
     return (
-        <AuthProvider>
+       
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/portal" element={<Portals />} />
                 <Route path="/student-portal" element={<StudentPortal />} />
-                <Route path="/teacher-portal" element={<TeacherPortal />} />
+                <Route path="/teacher-portal" element={<TeacherPortal/>} />
                 <Route path="/admin-portal" element={<ClassPortal />} />
                 <Route path="/student" element={<Student />} />
                 <Route path="/teacher" element={<Teacher />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/register" element={<RegistrationForm />} />
                 <Route path="/login" element={<LoginForm />} />
-                 <Route path='/test'  element={<MyComponent/>}/>
+                <Route path='/test'  element={<MyComponent/>}/>
+                 <Route path='/class-management' element={<ClassManagement/>}/>
+                 <Route path='/testdropdown' element={<TeacherDropdown/>}/>
             </Routes>
         </BrowserRouter>
-        </AuthProvider>
+       
     );
 }
 

@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode'; // Ensure jwt-decode is installed
-import { toast } from 'react-toastify'; // Ensure react-toastify is installed
+import {jwtDecode} from 'jwt-decode'; // Ensure this is imported correctly
+import { toast } from 'react-toastify';
 
 const AuthContext = createContext();
 
@@ -9,9 +9,9 @@ export const AuthProvider = ({ children }) => {
     const [userInfo, setUserInfo] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    // Unified login function for students, teachers, and admins
     const login = async (credentials, userType) => {
         let loginRoute;
+        console.log('User Type to Login:', userType);
 
         switch (userType) {
             case 'student':
@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
                 loginRoute = '/api/teacher/login';
                 break;
             case 'admin':
-                loginRoute = '/api/admin/login';
+                loginRoute = '/api/class/login';
                 break;
             default:
                 throw new Error('Invalid user type');
@@ -31,70 +31,88 @@ export const AuthProvider = ({ children }) => {
             const response = await axios.post(`http://localhost:5000${loginRoute}`, credentials);
             const { token, user } = response.data;
 
-            // Set user info and authentication status
-            setUserInfo({ ...user, token });
-            console.log('User Info after login:', { ...user, token });
+            // Set user info and authentication state
+            // setUserInfo({ ...user, token });
+            setUserInfo({ ...user, token, userType });
 
             setIsAuthenticated(true);
-            localStorage.setItem('authToken', token); // Persist token
+            localStorage.setItem('authToken', token);
         } catch (error) {
             console.error('Login failed:', error);
-            toast.error('Login failed. Please try again.'); // Notify user
-            throw error; // Propagate error to the component
+            toast.error('Login failed. Please try again.');
+            throw error;
         }
     };
 
-    // Fetch user profile function
-    const fetchUserProfile = async (userId, token, userType) => {
+    const fetchUserProfile = async (userId, token) => {
         let profileRoute;
-
+    
+        // Check the user type from userInfo or another state/context
+        console.log('User Type during profile fetch:', userInfo?.type);
+    
+        const userType = userInfo?.type; // Make sure this is being set correctly
         switch (userType) {
             case 'student':
-                profileRoute = `/api/student/${userId}`;
+                profileRoute = `http://localhost:5000/api/student/${userId}`;
+                console.log('Fetching student profile...');
                 break;
             case 'teacher':
-                profileRoute = `/api/teacher/${userId}`;
+                profileRoute = `http://localhost:5000/api/teacher/${userId}`;
+                console.log('Fetching teacher profile...');
                 break;
             case 'admin':
-                profileRoute = `/api/admin/${userId}`;
+                profileRoute = `http://localhost:5000/api/class/${userId}`;
+                console.log('Fetching admin profile...');
                 break;
             default:
-                throw new Error('Invalid user type');
+                console.error('Unknown user type:', userType);
+                return;
         }
-
+    
+        // Log the API route being used
+        console.log('Profile route:', profileRoute);
+    
         try {
-            const response = await axios.get(`http://localhost:5000${profileRoute}`, {
+            const response = await axios.get(profileRoute, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setUserInfo({ ...response.data, token }); // Update user info
-            console.log('User Info after fetching:', { ...response.data, token });
+            console.log('User Profile Fetched:', response.data);
+            setUserInfo({ ...response.data, token });
             setIsAuthenticated(true);
         } catch (error) {
             console.error('Failed to fetch user profile:', error);
             setIsAuthenticated(false);
-            setUserInfo(null); 
-            toast.error('Failed to fetch user profile.');
+            setUserInfo(null);
+            localStorage.removeItem('authToken');
+            toast.error('Failed to fetch user profile. Please log in again.');
+        }
+    };
+    
+    const extractUserIdFromToken = (token) => {
+        try {
+            const decodedToken = jwtDecode(token);
+            return decodedToken.id;
+        } catch (error) {
+            console.error('Failed to decode token:', error);
+            return null;
         }
     };
 
-    // Token extraction
-    const extractUserIdFromToken = (token) => {
-        const decodedToken = jwtDecode(token);
-        return decodedToken.id; // Adjust based on your token structure
-    };
-
-    // Initial load check for existing token
     useEffect(() => {
         const token = localStorage.getItem('authToken');
         if (token) {
             const userId = extractUserIdFromToken(token);
-            const userType = token.includes('admin') ? 'admin' : (token.includes('student') ? 'student' : 'teacher'); // Adjust based on token
-            fetchUserProfile(userId, token, userType); // Fetch user profile on initial load
+            if (userId) {
+                fetchUserProfile(userId, token);
+            } else {
+                toast.error('Invalid token. Please log in again.');
+                localStorage.removeItem('authToken');
+            }
         }
     }, []);
 
     return (
-        <AuthContext.Provider value={{ userInfo, isAuthenticated, login, fetchUserProfile, extractUserIdFromToken }}>
+        <AuthContext.Provider value={{ userInfo, isAuthenticated, login, fetchUserProfile, extractUserIdFromToken}}>
             {children}
         </AuthContext.Provider>
     );

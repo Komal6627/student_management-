@@ -3,9 +3,10 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Class from "../models/classModel.js";
 
+
 // Register 
 export const registerAdmin = async (req, res) => {
-  const { name, contactNo, email, password } = req.body;
+  const { name, contactNo, email,  gender, dateOfBirth,address, password } = req.body;
 
   try {
     
@@ -24,6 +25,7 @@ export const registerAdmin = async (req, res) => {
       contactNo,
       email,
       password: hashedPassword,
+      dateOfBirth,address,
     });
 
     
@@ -34,7 +36,8 @@ export const registerAdmin = async (req, res) => {
       expiresIn: '1h',
     });
 
-    res.status(201).json({ message: 'Admin registered successfully', token });
+    res.status(201).json({ message: 'Admin registered successfully', token })
+    
   } catch (error) {
     console.error('Registration Error:', error);
     res.status(500).json({ message: 'Server error', error });
@@ -63,7 +66,16 @@ export const loginAdmin = async (req, res) => {
       expiresIn: '1h',
     });
 
-    res.status(200).json({ message: 'Login successful', token });
+    // res.status(200).json({ message: 'Login successful', token });
+    res.status(200).json({
+      message: 'Login successful',
+      token, // Use the token generated
+      user: {
+          id: admin._id, // Include student ID
+          email: admin.email,
+          type: admin.type, // Ensure this field exists
+      },
+  });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }

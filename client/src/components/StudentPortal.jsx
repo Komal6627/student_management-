@@ -1,19 +1,28 @@
-import React, { useState } from 'react';
-import { useAuth } from '../context/TestAuthC';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext.js';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const StudentPortal = () => {
     const { userInfo } = useAuth();
+
+    console.log("UserInfo",userInfo);
+    
+    // Initialize state unconditionally
     const [student, setStudent] = useState({
-        name: userInfo?.student?.name || '',
-        email: userInfo?.student?.email || '',
-        gender: userInfo?.student?.gender || '',
-        year: userInfo?.student?.year || '',
-        dateOfBirth: userInfo?.student?.dateOfBirth || '',
-        address: userInfo?.student?.address || '',
-        contactNo: userInfo?.student?.contactNo || '',
+        name: userInfo?.name || '',
+
+        email: '',
+        gender: '',
+        year: '',
+        dateOfBirth: '',
+        address: '',
+        contactNo: '',
     });
+
+    console.log(userInfo?.name);
+    
+    
     const [isEditing, setIsEditing] = useState(false);
 
     const toastOptions = {
@@ -24,6 +33,21 @@ const StudentPortal = () => {
         theme: 'dark',
     };
 
+    // Update student state when userInfo changes
+    useEffect(() => {
+        if (userInfo) {
+            setStudent({
+                name: userInfo.name || '',
+                email: userInfo.email || '',
+                gender: userInfo.gender || '',
+                year: userInfo.year || '',
+                dateOfBirth: userInfo.dateOfBirth || '',
+                address: userInfo.address || '',
+                contactNo: userInfo.contactNo || '',
+            });
+        }
+    }, [userInfo]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setStudent((prev) => ({ ...prev, [name]: value }));
@@ -31,9 +55,9 @@ const StudentPortal = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const userId = JSON.parse(localStorage.getItem('user')).id; // Get the user ID
-        console.log("Student ID for update:", userId);
-        
+        const userId = JSON.parse(localStorage.getItem('user'))?.id;
+        console.log("User ID:", userId); // Log userId
+    
         if (userId) {
             try {
                 const response = await axios.put(`http://localhost:5000/api/student/${userId}`, {
@@ -44,7 +68,7 @@ const StudentPortal = () => {
                     address: student.address,
                     contactNo: student.contactNo,
                 });
-
+    
                 if (response.data.success) {
                     toast.success('Student information updated successfully', toastOptions);
                     setStudent((prev) => ({ ...prev, ...response.data.student }));
@@ -52,18 +76,19 @@ const StudentPortal = () => {
                     toast.error('Failed to update student information', toastOptions);
                 }
             } catch (error) {
-                console.error('Error updating student info:', error);
-                toast.error('Error updating student information', toastOptions);
+                console.error('Error updating student info:', error.response?.data || error.message);
+                toast.error(`Error updating student information: ${error.response?.data?.message || error.message}`, toastOptions);
             }
         } else {
             console.error('No user ID found for update');
             toast.error('User ID not found', toastOptions);
         }
     };
+    
 
     const handleDelete = async () => {
-        const userId = JSON.parse(localStorage.getItem('user')).id; // Get the user ID
-        
+        const userId = JSON.parse(localStorage.getItem('user')).id;
+
         if (userId) {
             const confirmDelete = window.confirm('Are you sure you want to delete your account? This action cannot be undone.');
 
@@ -73,8 +98,8 @@ const StudentPortal = () => {
 
                     if (response.data.success) {
                         toast.success('Student account deleted successfully', toastOptions);
-                        // Optionally redirect to login or home page after deletion
-                        // window.location.href = '/login'; // Uncomment to redirect to login
+                        // Redirect or perform any other action after successful deletion
+                        window.location.href = '/login'; // Uncomment to redirect to login
                     } else {
                         toast.error('Failed to delete student account', toastOptions);
                     }
@@ -88,6 +113,10 @@ const StudentPortal = () => {
             toast.error('User ID not found', toastOptions);
         }
     };
+
+    if (!userInfo) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className="flex flex-col items-center p-4">
@@ -156,7 +185,6 @@ const StudentPortal = () => {
                                     )}
                                 </td>
                             </tr>
-                           
                             <tr>
                                 <td className="border border-gray-300 p-2">Date of Birth</td>
                                 <td className="border border-gray-300 p-2">
@@ -211,29 +239,30 @@ const StudentPortal = () => {
                         <button
                             type="button"
                             onClick={() => setIsEditing((prev) => !prev)}
-                            className="bg-blue-500 text-white py-2 px-4 rounded"
+                            className="bg-blue-500 text-white rounded p-2"
                         >
-                            {isEditing ? "Back" : "Edit"}
+                            {isEditing ? 'Cancel' : 'Edit'}
                         </button>
                         {isEditing && (
                             <button
                                 type="submit"
-                                className="bg-green-500 text-white py-2 px-4 rounded"
+                                className="bg-green-500 text-white rounded p-2"
                             >
                                 Save
                             </button>
                         )}
+                        <button
+                            type="button"
+                            onClick={handleDelete}
+                            className="bg-red-500 text-white rounded p-2"
+                        >
+                            Delete Account
+                        </button>
                     </div>
                 </form>
             ) : (
-                <p>No student data available.</p>
+                <p>No student data found.</p>
             )}
-            <button
-                onClick={handleDelete}
-                className="mt-4 bg-red-500 text-white py-2 px-4 rounded"
-            >
-                Delete Account
-            </button>
         </div>
     );
 };

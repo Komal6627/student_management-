@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 
 const studentSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    default: 'student', // Default type
+},
   name: {
     type: String,
     required: true

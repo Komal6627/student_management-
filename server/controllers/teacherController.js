@@ -51,7 +51,22 @@ export const loginTeacher = async (req, res) => {
       expiresIn: '1h',
     });
 
-    res.status(200).json({ message: 'Login successful', token });
+      // Include student data in the response
+      res.status(200).json({
+        message: 'Login successful',
+        token, // Use the token generated
+        user: {
+          id: teacher._id, // Use teacher ID
+          name: teacher.name,
+          email: teacher.email,
+          type: teacher.type, // Ensure this field exists
+          contactNo: teacher.contactNo,
+          gender: teacher.gender,
+          dateOfBirth: teacher.dateOfBirth,
+          address: teacher.address
+        },
+      });
+
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }

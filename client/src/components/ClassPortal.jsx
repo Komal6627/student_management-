@@ -1,9 +1,11 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const ClassPortal = () => {
   return (
     <div>
-      Class Portal
+       <Link to="/class-analytics"> Class Analytics</Link>
+       <Link to='/class-management'> Class Management</Link>
     </div>
   )
 }

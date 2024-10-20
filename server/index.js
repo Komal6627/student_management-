@@ -9,7 +9,10 @@ import classRoute from "./routes/classRoute.js"
 const app = express();
 dotenv.config();
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', // Your frontend URL
+  credentials: true,
+}));
 app.use(express.json());
 
 

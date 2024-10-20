@@ -1,7 +1,7 @@
 import React from 'react'
 import LoginForm from '../components/LoginForm'
 import TeacherPortal from '../components/TeacherPortal';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/TestAuthC';
 
 const Teacher = () => {
   const { isAuthenticated } = useAuth(); // Get authentication state
