@@ -10,9 +10,7 @@ import LoginForm from "./components/LoginForm.jsx";
 import StudentPortal from "./components/StudentPortal";
 import ClassPortal from "./components/ClassPortal";
 import TeacherPortal from "./components/TeacherPortal";
-import MyComponent from "./components/MyComponent";
 import ClassAnalytics from "./components/ClassAnalytics";
-import ClassManagement from "./components/ClassManagement.jsx";
 import TeacherDropdown from "./components/TeacherDowopdown.jsx";
 
 function App() {
@@ -29,8 +27,6 @@ function App() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/register" element={<RegistrationForm />} />
         <Route path="/login" element={<LoginForm />} />
-        <Route path="/test" element={<MyComponent />} />
-        <Route path="/class-management" element={<ClassManagement />} />
         <Route path="/testdropdown" element={<TeacherDropdown />} />
         <Route path="/class-analytics/:id" element={<ClassAnalytics />} />
       </Routes>

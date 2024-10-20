@@ -68,8 +68,6 @@ const ClassManagement = () => {
     }
   };
 
-
-  
   return (
     <div className="container mx-auto p-4">
       <header className="flex justify-between items-center mb-4">
@@ -159,7 +157,6 @@ const ClassManagement = () => {
                     })()}
                   </td>
 
-              
                   <td className="border px-4 py-2">
                     <Link
                       to={`/class-analytics/${classItem._id}`}
