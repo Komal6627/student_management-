@@ -11,7 +11,6 @@ const StudentPortal = () => {
     // Initialize state unconditionally
     const [student, setStudent] = useState({
         name: userInfo?.name || '',
-
         email: '',
         gender: '',
         year: '',
